@@ -1,0 +1,24 @@
+services:
+  api:
+    container_image: food-order-api
+    image: food-order-api
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db
+
+  db:
+    container_image: ${DB_NAME}
+    image: postgres:alpine3.20
+    ports:
+      - ${PORT_DB}:${PORT_DB}
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+   
+volumes:
+  postgres-db:
+    external: false
+    
