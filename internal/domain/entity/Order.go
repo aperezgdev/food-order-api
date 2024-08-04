@@ -14,10 +14,10 @@ type Order struct {
 }
 
 func NewOrder(dishes []vo_dish.DishId) Order {
-	return Order(
+	return Order{
 		id: NewOrderId(), 
 		status: NEW, 
 		dishes: dishes, 
 		createdOn: vo_shared.NewCreatedOn(),
-	)
+	}
 }
