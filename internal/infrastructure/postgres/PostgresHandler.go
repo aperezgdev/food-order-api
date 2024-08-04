@@ -1,6 +1,7 @@
 package postgres_handler
 
 import (
+	"github.com/aperezgdev/food-order-api/env"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -9,7 +10,8 @@ type PostgresHandler struct {
 	DB *gorm.DB
 }
 
-func NewPostgresHandler(conn string) PostgresHandler {
+func NewPostgresHandler(env env.EnvApp) PostgresHandler {
+	conn := "host=db user=" + env.DB_USER + "password=" + env.DB_PASSWORD + "dbname=" +  env.DB_NAME + " port=" + env.PORT_DB + "sslmode=disable"
 	db, err := gorm.Open(postgres.Open(conn))
 	if err != nil {
 		panic(err)
