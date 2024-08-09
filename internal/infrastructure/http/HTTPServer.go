@@ -2,10 +2,11 @@ package http_server
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 
 	"github.com/aperezgdev/food-order-api/env"
@@ -13,35 +14,43 @@ import (
 
 type Route interface {
 	Pattern() string
-	http.Handler
+	Method() string
+	Handler(*gin.Context)
 }
 
-func NewHTTPServer(lc fx.Lifecycle, env env.EnvApp, mux *http.ServeMux) *http.Server {
-	srv := &http.Server{Addr: ":" + env.PORT, Handler: mux}
+func NewHTTPGinServer(
+	lc fx.Lifecycle,
+	handler http.Handler,
+	log *slog.Logger,
+	env env.EnvApp,
+) *http.Server {
+	srv := &http.Server{Addr: ":" + env.PORT, Handler: handler}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			ln, err := net.Listen("tcp", srv.Addr)
 			if err != nil {
-				return err
+				panic(err)
 			}
-			fmt.Println("Starting HTTP server at", srv.Addr)
+
+			log.Info("Starting Gin Server")
+
 			go srv.Serve(ln)
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			return srv.Shutdown(ctx)
+			log.Info("Ending gin server")
+			return nil
 		},
 	})
 	return srv
 }
 
-func NewServerMux(routes []Route) *http.ServeMux {
-	mux := http.NewServeMux()
+func NewHTTPRouterGinGonic(routes []Route) http.Handler {
+	r := gin.Default()
 
 	for _, route := range routes {
-		mux.Handle(route.Pattern(), route)
+		r.Handle(route.Method(), route.Pattern(), route.Handler)
 	}
 
-	return mux
+	return r
 }
-

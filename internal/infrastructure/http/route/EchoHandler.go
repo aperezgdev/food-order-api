@@ -1,9 +1,10 @@
 package route
 
 import (
-	"io"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type EchoHandler struct {
@@ -14,12 +15,14 @@ func NewEchoHandler(log *log.Logger) *EchoHandler {
 	return &EchoHandler{log}
 }
 
+func (*EchoHandler) Method() string {
+	return http.MethodGet
+}
+
 func (*EchoHandler) Pattern() string {
 	return "/echo"
 }
 
-func (eh *EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if _, err := io.Copy(w, r.Body); err != nil {
-		eh.log.Print("Failed to handle request:", err)
-	}
+func (eh *EchoHandler) Handler(ctx *gin.Context) {
+	ctx.JSON(200, "echo")
 }

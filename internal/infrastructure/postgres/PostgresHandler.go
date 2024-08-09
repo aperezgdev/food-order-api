@@ -1,39 +1,33 @@
 package postgres_handler
 
 import (
+	"database/sql"
+	"log/slog"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+
 	"github.com/aperezgdev/food-order-api/env"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/aperezgdev/food-order-api/internal/infrastructure/postgres/queries"
 )
 
 type PostgresHandler struct {
-	DB *gorm.DB
+	DB *sqlx.DB
 }
 
-func NewPostgresHandler(env env.EnvApp) PostgresHandler {
-	conn := "host=db user=" + env.DB_USER + "password=" + env.DB_PASSWORD + "dbname=" +  env.DB_NAME + " port=" + env.PORT_DB + "sslmode=disable"
-	db, err := gorm.Open(postgres.Open(conn))
+func NewPostgresHandler(env env.EnvApp, log *slog.Logger) PostgresHandler {
+	conn := "host=" + env.DB_HOST + " user=" + env.DB_USER + " password=" + env.DB_PASSWORD + " dbname=" + env.DB_NAME + " port=" + env.PORT_DB + " sslmode=disable"
+	db, err := sqlx.Open("postgres", conn)
 	if err != nil {
 		panic(err)
 	}
 
+	db.MustExec(queries.Uuid_extension)
+	db.MustExec(queries.UserSchema)
+
 	return PostgresHandler{db}
 }
 
-func (ph *PostgresHandler) Create(obj interface{}) error {
-	result := ph.DB.Create(&obj)
-
-	return result.Error
-}
-
-func (ph *PostgresHandler) FindAll(obj interface{}) error {
-	result := ph.DB.Find(obj)
-
-	return result.Error
-}
-
-func (ph *PostgresHandler) DeleteById(obj interface{}, id string) error {
-	result := ph.DB.Delete(obj, id)
-
-	return result.Error
+func (ph *PostgresHandler) Create(insert string, obj interface{}) (sql.Result, error) {
+	return ph.DB.Exec(insert, &obj)
 }

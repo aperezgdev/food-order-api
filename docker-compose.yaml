@@ -5,7 +5,9 @@ services:
     ports:
       - ${PORT}:${PORT}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+        restart: true
 
   db:
     container_name: ${DB_NAME}
@@ -14,11 +16,15 @@ services:
       - ${PORT_DB}:${PORT_DB}
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB:  ${DB_NAME}
     volumes:
       - postgres-db:/var/lib/postgresql/data
-   
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres-db:
     external: false

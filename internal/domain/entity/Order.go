@@ -7,17 +7,17 @@ import (
 )
 
 type Order struct {
-	id        OrderId
-	status    OrderStatus
-	dishes    []vo_dish.DishId
-	createdOn vo_shared.CreatedOn
+	Id        OrderId
+	Status    OrderStatus
+	Dishes    []vo_dish.DishId
+	CreatedOn vo_shared.CreatedOn
 }
 
 func NewOrder(dishes []vo_dish.DishId) Order {
 	return Order{
-		id: NewOrderId(), 
-		status: NEW, 
-		dishes: dishes, 
-		createdOn: vo_shared.NewCreatedOn(),
+		Id:        NewOrderId(),
+		Status:    NEW,
+		Dishes:    dishes,
+		CreatedOn: vo_shared.NewCreatedOn(),
 	}
 }
