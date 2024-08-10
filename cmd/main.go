@@ -6,10 +6,12 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/aperezgdev/food-order-api/env"
-	application "github.com/aperezgdev/food-order-api/internal/application/User"
+	app_dish "github.com/aperezgdev/food-order-api/internal/application/Dish"
+	app_user "github.com/aperezgdev/food-order-api/internal/application/User"
 	http_server "github.com/aperezgdev/food-order-api/internal/infrastructure/http"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/http/controller"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/http/route"
+	route_dish "github.com/aperezgdev/food-order-api/internal/infrastructure/http/route/dish"
+	route_user "github.com/aperezgdev/food-order-api/internal/infrastructure/http/route/user"
 	logger "github.com/aperezgdev/food-order-api/internal/infrastructure/log"
 	postgres_handler "github.com/aperezgdev/food-order-api/internal/infrastructure/postgres"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
@@ -22,16 +24,20 @@ func main() {
 			logger.NewLogger,
 			postgres_handler.NewPostgresHandler,
 			repository.NewUserPostgresRepository,
+			repository.NewDishPostgresRepository,
 			http_server.NewHTTPGinServer,
-			application.NewUserCreator,
+			app_user.NewUserCreator,
+			app_user.NewUserFinder,
+			app_dish.NewDishCreator,
 			controller.NewUserController,
-			application.NewUserFinder,
+			controller.NewDishController,
 			fx.Annotate(
 				http_server.NewHTTPRouterGinGonic,
 				fx.ParamTags(`group:"routes"`),
 			),
-			asRoute(route.NewUserPostRouteHandler),
-			asRoute(route.NewUserGetRouteHandler),
+			asRoute(route_user.NewUserPostRouteHandler),
+			asRoute(route_user.NewUserGetRouteHandler),
+			asRoute(route_dish.NewDishPostRouteHandler),
 		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()

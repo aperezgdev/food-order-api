@@ -24,6 +24,7 @@ func NewPostgresHandler(env env.EnvApp, log *slog.Logger) PostgresHandler {
 
 	db.MustExec(queries.Uuid_extension)
 	db.MustExec(queries.UserSchema)
+	db.MustExec(queries.DishSchema)
 
 	return PostgresHandler{db}
 }
