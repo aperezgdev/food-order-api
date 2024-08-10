@@ -30,17 +30,17 @@ func main() {
 				http_server.NewHTTPRouterGinGonic,
 				fx.ParamTags(`group:"routes"`),
 			),
-			fx.Annotate(
-				route.NewUserPostRouteHandler,
-				fx.As(new(http_server.Route)),
-				fx.ResultTags(`group:"routes"`),
-			),
-			fx.Annotate(
-				route.NewUserGetRouteHandler,
-				fx.As(new(http_server.Route)),
-				fx.ResultTags(`group:"routes"`),
-			),
+			asRoute(route.NewUserPostRouteHandler),
+			asRoute(route.NewUserGetRouteHandler),
 		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()
+}
+
+func asRoute(route any) interface{} {
+	return fx.Annotate(
+		route,
+		fx.As(new(http_server.Route)),
+		fx.ResultTags(`group:"routes"`),
+	)
 }
