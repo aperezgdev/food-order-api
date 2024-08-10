@@ -25,12 +25,18 @@ func main() {
 			http_server.NewHTTPGinServer,
 			application.NewUserCreator,
 			controller.NewUserController,
+			application.NewUserFinder,
 			fx.Annotate(
 				http_server.NewHTTPRouterGinGonic,
 				fx.ParamTags(`group:"routes"`),
 			),
 			fx.Annotate(
 				route.NewUserPostRouteHandler,
+				fx.As(new(http_server.Route)),
+				fx.ResultTags(`group:"routes"`),
+			),
+			fx.Annotate(
+				route.NewUserGetRouteHandler,
 				fx.As(new(http_server.Route)),
 				fx.ResultTags(`group:"routes"`),
 			),

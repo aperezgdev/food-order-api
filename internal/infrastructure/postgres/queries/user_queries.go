@@ -7,5 +7,6 @@ const (
 		email VARCHAR NOT NULL,
 		PRIMARY KEY (id)
 	);`
-	UserCreate = `INSERT INTO Users(name, email) VALUES (:name, :email)`
+	UserCreate = `INSERT INTO Users(name, email) VALUES (:name, :email);`
+	UserFinder = `SELECT * FROM Users WHERE id = $1`
 )

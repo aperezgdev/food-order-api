@@ -5,9 +5,9 @@ import (
 )
 
 type User struct {
-	UserId UserId
-	Name   UserName
-	Email  UserEmail
+	UserId UserId    `db:"id"`
+	Name   UserName  `db:"name"`
+	Email  UserEmail `db:"email"`
 }
 
 func NewUser(name UserName, email UserEmail) User {

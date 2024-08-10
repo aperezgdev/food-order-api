@@ -24,13 +24,13 @@ func NewUserPostgresRepository(
 }
 
 func (ur *UserPostgresRepository) FindById(id value_object.UserId) (entity.User, error) {
-	user := new(entity.User)
-	_, err := ur.postgresHandler.DB.Exec("", &id)
+	user := entity.User{}
+	err := ur.postgresHandler.DB.Get(&user, queries.UserFinder, id)
 	if err != nil {
-		return *user, err
+		return user, err
 	}
 
-	return *user, nil
+	return user, nil
 }
 
 func (ur *UserPostgresRepository) Save(user entity.User) error {
