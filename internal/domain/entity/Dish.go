@@ -10,7 +10,7 @@ type Dish struct {
 	Name        DishName            `db:"name"`
 	Description DishDescription     `db:"description"`
 	Price       vo_shared.Price     `db:"price"`
-	CreatedOn   vo_shared.CreatedOn `db:"createdOn"`
+	CreatedOn   vo_shared.CreatedOn `db:"createdon"`
 }
 
 func NewDish(name DishName, description DishDescription, price vo_shared.Price) *Dish {

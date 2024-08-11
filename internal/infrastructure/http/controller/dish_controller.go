@@ -11,12 +11,26 @@ import (
 )
 
 type DishController struct {
-	slog        *slog.Logger
-	dishCreator *application.DishCreator
+	slog          *slog.Logger
+	dishCreator   *application.DishCreator
+	dishFinderAll *application.DishFinderAll
 }
 
-func NewDishController(slog *slog.Logger, dishCreator *application.DishCreator) *DishController {
-	return &DishController{slog, dishCreator}
+func NewDishController(
+	slog *slog.Logger,
+	dishCreator *application.DishCreator,
+	dishFinderAll *application.DishFinderAll,
+) *DishController {
+	return &DishController{slog, dishCreator, dishFinderAll}
+}
+
+func (dc *DishController) GetAll(ctx *gin.Context) {
+	dishes, err := dc.dishFinderAll.Run()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	ctx.JSON(http.StatusOK, dishes)
 }
 
 func (dc *DishController) Create(ctx *gin.Context) {

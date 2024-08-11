@@ -10,6 +10,7 @@ import (
 	app_user "github.com/aperezgdev/food-order-api/internal/application/User"
 	http_server "github.com/aperezgdev/food-order-api/internal/infrastructure/http"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/http/controller"
+	route "github.com/aperezgdev/food-order-api/internal/infrastructure/http/route/dish"
 	route_dish "github.com/aperezgdev/food-order-api/internal/infrastructure/http/route/dish"
 	route_user "github.com/aperezgdev/food-order-api/internal/infrastructure/http/route/user"
 	logger "github.com/aperezgdev/food-order-api/internal/infrastructure/log"
@@ -29,6 +30,7 @@ func main() {
 			app_user.NewUserCreator,
 			app_user.NewUserFinder,
 			app_dish.NewDishCreator,
+			app_dish.NewDishFinderAll,
 			controller.NewUserController,
 			controller.NewDishController,
 			fx.Annotate(
@@ -38,6 +40,7 @@ func main() {
 			asRoute(route_user.NewUserPostRouteHandler),
 			asRoute(route_user.NewUserGetRouteHandler),
 			asRoute(route_dish.NewDishPostRouteHandler),
+			asRoute(route.NewDishGetRouteHandler),
 		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()
