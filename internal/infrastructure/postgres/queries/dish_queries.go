@@ -12,5 +12,5 @@ const (
 	DishGetAll = `SELECT * FROM Dishes`
 	DishCreate = `INSERT INTO Dishes(name, description, price) VALUES (:name, :description, :price)`
 	DishUpdate = `UPDATE Dishes SET name= :name, description= :description, price= :price WHERE id= :id`
-	DishDelete = `DELETE FROM Dishes WHERE id = :id`
+	DishDelete = `DELETE FROM Dishes WHERE id = $1`
 )

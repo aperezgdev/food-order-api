@@ -31,6 +31,7 @@ func main() {
 			app_user.NewUserFinder,
 			app_dish.NewDishCreator,
 			app_dish.NewDishFinderAll,
+			app_dish.NewDishRemover,
 			controller.NewUserController,
 			controller.NewDishController,
 			fx.Annotate(
@@ -41,6 +42,7 @@ func main() {
 			asRoute(route_user.NewUserGetRouteHandler),
 			asRoute(route_dish.NewDishPostRouteHandler),
 			asRoute(route.NewDishGetRouteHandler),
+			asRoute(route.NewDishDeleteRouteHandler),
 		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()
