@@ -16,6 +16,7 @@ type DishController struct {
 	dishCreator   *application.DishCreator
 	dishFinderAll *application.DishFinderAll
 	dishRemover   *application.DishRemover
+	dishUpdater   *application.DishUpdater
 }
 
 func NewDishController(
@@ -23,14 +24,16 @@ func NewDishController(
 	dishCreator *application.DishCreator,
 	dishFinderAll *application.DishFinderAll,
 	dishRemover *application.DishRemover,
+	dishUpdater *application.DishUpdater,
 ) *DishController {
-	return &DishController{slog, dishCreator, dishFinderAll, dishRemover}
+	return &DishController{slog, dishCreator, dishFinderAll, dishRemover, dishUpdater}
 }
 
 func (dc *DishController) GetAll(ctx *gin.Context) {
 	dishes, err := dc.dishFinderAll.Run()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	ctx.JSON(http.StatusOK, dishes)
@@ -43,11 +46,32 @@ func (dc *DishController) Create(ctx *gin.Context) {
 	err = ctx.ShouldBind(&dish)
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "Body is not valid")
+		return
 	}
 
 	err = dc.dishCreator.Run(dish)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+}
+
+func (dc *DishController) Update(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var err error
+	dish := entity.Dish{Id: value_object.DishId(id)}
+
+	err = ctx.ShouldBind(&dish)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "Body is not valid")
+		return
+	}
+
+	err = dc.dishUpdater.Run(dish)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Body is not valid")
+		return
 	}
 }
 

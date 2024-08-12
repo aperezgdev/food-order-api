@@ -32,6 +32,7 @@ func main() {
 			app_dish.NewDishCreator,
 			app_dish.NewDishFinderAll,
 			app_dish.NewDishRemover,
+			app_dish.NewDishUpdater,
 			controller.NewUserController,
 			controller.NewDishController,
 			fx.Annotate(
@@ -40,6 +41,7 @@ func main() {
 			),
 			asRoute(route_user.NewUserPostRouteHandler),
 			asRoute(route_user.NewUserGetRouteHandler),
+			asRoute(route_dish.NewDishPutRouteHandler),
 			asRoute(route_dish.NewDishPostRouteHandler),
 			asRoute(route.NewDishGetRouteHandler),
 			asRoute(route.NewDishDeleteRouteHandler),

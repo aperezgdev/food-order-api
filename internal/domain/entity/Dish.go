@@ -6,11 +6,11 @@ import (
 )
 
 type Dish struct {
-	Id          DishId              `db:"id"`
-	Name        DishName            `db:"name"`
-	Description DishDescription     `db:"description"`
-	Price       vo_shared.Price     `db:"price"`
-	CreatedOn   vo_shared.CreatedOn `db:"createdon"`
+	Id          DishId              `db:"id"          binding:"-"`
+	Name        DishName            `db:"name"        binding:"required"`
+	Description DishDescription     `db:"description" binding:"required"`
+	Price       vo_shared.Price     `db:"price"       binding:"required"`
+	CreatedOn   vo_shared.CreatedOn `db:"createdon"   binding:"-"`
 }
 
 func NewDish(name DishName, description DishDescription, price vo_shared.Price) *Dish {
