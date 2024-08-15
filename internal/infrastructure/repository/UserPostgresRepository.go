@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/aperezgdev/food-order-api/internal/domain/entity"
@@ -36,7 +35,6 @@ func (ur *UserPostgresRepository) FindById(id value_object.UserId) (entity.User,
 func (ur *UserPostgresRepository) Save(user entity.User) error {
 	_, err := ur.postgresHandler.DB.NamedExec(queries.UserCreate, &user)
 	if err != nil {
-		fmt.Println(err)
 		ur.log.Error("UserPostgresRepository.Save", err.Error())
 	}
 

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 
 	application "github.com/aperezgdev/food-order-api/internal/application/User"
 	"github.com/aperezgdev/food-order-api/internal/domain/entity"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
 	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/User"
 )
 
@@ -34,25 +36,35 @@ func (uc *UserController) Create(ctx *gin.Context) {
 		ctx.String(http.StatusBadRequest, "Body is not valid")
 	}
 
-	uc.log.Info("UserController.Create - Body value", user)
+	uc.log.Info("UserController.Create - Body value", slog.Any("user", user))
 
-	err = uc.userCreator.Run(&user)
-	if err != nil {
-		ctx.String(http.StatusInternalServerError, "Internal Server Error")
-	}
+	result := uc.userCreator.Run(&user)
+
+	result.Error(func(err error) {
+		uc.handlerError(err, ctx)
+	}).Ok(func(t *entity.User) {
+		ctx.Status(http.StatusCreated)
+	})
 }
 
 func (uc *UserController) Find(ctx *gin.Context) {
 	rawId := ctx.Param("id")
 
-	user, err := uc.userFinder.Run(value_object.UserId(rawId))
-	if err != nil {
-		uc.log.Error("UserController.Find", err)
+	result := uc.userFinder.Run(value_object.UserId(rawId))
+
+	result.Error(func(err error) {
+		uc.handlerError(err, ctx)
+	}).Ok(func(t *entity.User) {
+		ctx.JSON(http.StatusOK, t)
+	})
+}
+
+func (uc *UserController) handlerError(err error, ctx *gin.Context) {
+	uc.log.Error("UserController - Error has ocurred", slog.Any("error", err))
+
+	if errors.Is(err, domain_errors.NotFound) {
+		ctx.AbortWithStatus(http.StatusNotFound)
 	}
 
-	if user.UserId == "" {
-		ctx.String(http.StatusNotFound, "User not found")
-	}
-
-	ctx.JSON(http.StatusOK, user)
+	ctx.AbortWithStatus(http.StatusInternalServerError)
 }

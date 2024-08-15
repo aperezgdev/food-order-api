@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/aperezgdev/food-order-api/internal/domain/entity"
+	errors "github.com/aperezgdev/food-order-api/internal/domain/error"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
 )
 
@@ -20,7 +21,7 @@ func (dc *DishCreator) Run(dish entity.Dish) error {
 	err := dc.dishRepository.Save(dish)
 	if err != nil {
 		dc.slog.Error("DishCreator.Run", err.Error())
-		return err
+		return errors.Database
 	}
 
 	return nil
