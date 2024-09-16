@@ -24,6 +24,7 @@ func main() {
 			env.NewEnvApp,
 			logger.NewLogger,
 			postgres_handler.NewPostgresHandler,
+			postgres_handler.NewGormPostgresHandler,
 			repository.NewUserPostgresRepository,
 			repository.NewDishPostgresRepository,
 			http_server.NewHTTPGinServer,

@@ -2,18 +2,17 @@ package entity
 
 import (
 	vo_shared "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	vo_dish "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
 	. "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
 )
 
 type Order struct {
-	Id        OrderId
-	Status    OrderStatus
-	Dishes    []vo_dish.DishId
-	CreatedOn vo_shared.CreatedOn
+	Id        OrderId             `gorm:"type:uuid;default:gen_random_uuid()"`
+	Status    OrderStatus         `db:"status"`
+	Dishes    []*Dish             `gorm:"many2many:orders_dishes;"`
+	CreatedOn vo_shared.CreatedOn `db:"createdOn"`
 }
 
-func NewOrder(dishes []vo_dish.DishId) Order {
+func NewOrder(dishes []*Dish) Order {
 	return Order{
 		Id:        NewOrderId(),
 		Status:    NEW,

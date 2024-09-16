@@ -7,36 +7,35 @@ import (
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
 	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/User"
 	postgres_handler "github.com/aperezgdev/food-order-api/internal/infrastructure/postgres"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/postgres/queries"
 )
 
 type UserPostgresRepository struct {
-	log             *slog.Logger
-	postgresHandler postgres_handler.PostgresHandler
+	log                 *slog.Logger
+	gormPostgresHandler postgres_handler.GormPostgresHandler
 }
 
 func NewUserPostgresRepository(
 	log *slog.Logger,
-	postgresHandler postgres_handler.PostgresHandler,
+	gormPostgresHandler postgres_handler.GormPostgresHandler,
 ) repository.UserRepository {
-	return &UserPostgresRepository{log, postgresHandler}
+	return &UserPostgresRepository{log, gormPostgresHandler}
 }
 
 func (ur *UserPostgresRepository) FindById(id value_object.UserId) (entity.User, error) {
 	user := entity.User{}
-	err := ur.postgresHandler.DB.Get(&user, queries.UserFinder, id)
-	if err != nil {
-		return user, err
+	ctx := ur.gormPostgresHandler.DB.Find(&user, id)
+	if ctx.Error != nil {
+		return user, ctx.Error
 	}
 
 	return user, nil
 }
 
 func (ur *UserPostgresRepository) Save(user entity.User) error {
-	_, err := ur.postgresHandler.DB.NamedExec(queries.UserCreate, &user)
-	if err != nil {
-		ur.log.Error("UserPostgresRepository.Save", err.Error())
+	ctx := ur.gormPostgresHandler.DB.Create(&user)
+	if ctx.Error != nil {
+		ur.log.Error("UserPostgresRepository.Save", ctx.Error.Error())
 	}
 
-	return err
+	return ctx.Error
 }

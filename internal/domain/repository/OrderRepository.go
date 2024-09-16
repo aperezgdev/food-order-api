@@ -6,7 +6,8 @@ import (
 )
 
 type OrderRepository interface {
-	FindByStatus(*vo.OrderStatus) ([]Order, error)
-	Save(*Order) error
-	Update(*Order) error
+	FindAll() ([]Order, error)
+	FindByStatus(vo.OrderStatus) ([]Order, error)
+	Save(Order) error
+	UpdateStatus(vo.OrderId, vo.OrderStatus) error
 }

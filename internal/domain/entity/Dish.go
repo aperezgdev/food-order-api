@@ -6,13 +6,14 @@ import (
 )
 
 type Dish struct {
-	Id          DishId              `db:"id"          binding:"-"`
-	Name        DishName            `db:"name"        binding:"required"`
-	Description DishDescription     `db:"description" binding:"required"`
-	Price       vo_shared.Price     `db:"price"       binding:"required"`
-	CreatedOn   vo_shared.CreatedOn `db:"createdon"   binding:"-"`
+	Id          DishId              `gorm:"type:uuid;default:gen_random_uuid()" binding:"-"`
+	Name        DishName            `                                           binding:"required" db:"name"`
+	Description DishDescription     `                                           binding:"required" db:"description"`
+	Price       vo_shared.Price     `                                           binding:"required" db:"price"`
+	CreatedOn   vo_shared.CreatedOn `                                           binding:"-"        db:"createdon"`
+	Orders      []*Order            `gorm:"many2many:orders_dishes;"`
 }
 
 func NewDish(name DishName, description DishDescription, price vo_shared.Price) *Dish {
-	return &Dish{NewDishId(), name, description, price, vo_shared.NewCreatedOn()}
+	return &Dish{NewDishId(), name, description, price, vo_shared.NewCreatedOn(), []*Order{}}
 }

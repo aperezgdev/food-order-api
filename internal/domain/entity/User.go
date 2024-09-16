@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	UserId UserId    `db:"id"`
+	UserId UserId    `gorm:"type:uuid;default:gen_random_uuid()"`
 	Name   UserName  `db:"name"`
 	Email  UserEmail `db:"email"`
 }

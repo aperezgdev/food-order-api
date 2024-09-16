@@ -7,57 +7,56 @@ import (
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
 	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
 	postgres_handler "github.com/aperezgdev/food-order-api/internal/infrastructure/postgres"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/postgres/queries"
 )
 
 type DishPostgresRepository struct {
-	slog            *slog.Logger
-	postgresHandler postgres_handler.PostgresHandler
+	slog                *slog.Logger
+	gormPostgresHandler postgres_handler.GormPostgresHandler
 }
 
 func NewDishPostgresRepository(
 	slog *slog.Logger,
-	postgresHandler postgres_handler.PostgresHandler,
+	gormPostgresHandler postgres_handler.GormPostgresHandler,
 ) repository.DishRepository {
-	return &DishPostgresRepository{slog, postgresHandler}
+	return &DishPostgresRepository{slog, gormPostgresHandler}
 }
 
 func (dr *DishPostgresRepository) FindAll() ([]entity.Dish, error) {
 	dishes := []entity.Dish{}
-	err := dr.postgresHandler.DB.Select(&dishes, queries.DishGetAll)
-	if err != nil {
-		dr.slog.Error("DishPostgresRepository.FindAll - ", err.Error())
-		return dishes, err
+	ctx := dr.gormPostgresHandler.DB.Find(&dishes)
+	if ctx.Error != nil {
+		dr.slog.Error("DishPostgresRepository.FindAll - ", ctx.Error.Error())
+		return dishes, ctx.Error
 	}
 
 	return dishes, nil
 }
 
 func (dr *DishPostgresRepository) Save(dish entity.Dish) error {
-	_, err := dr.postgresHandler.DB.NamedExec(queries.DishCreate, &dish)
-	if err != nil {
-		dr.slog.Error("DishPostgresRepository.Save", err.Error())
-		return err
+	ctx := dr.gormPostgresHandler.DB.Create(&dish)
+	if ctx.Error != nil {
+		dr.slog.Error("DishPostgresRepository.Save", ctx.Error.Error())
+		return ctx.Error
 	}
 
 	return nil
 }
 
 func (dr *DishPostgresRepository) Update(dish entity.Dish) error {
-	_, err := dr.postgresHandler.DB.NamedExec(queries.DishUpdate, &dish)
-	if err != nil {
-		dr.slog.Error("DishPostgresRepository.Update", err.Error())
-		return err
+	ctx := dr.gormPostgresHandler.DB.Create(&dish)
+	if ctx.Error != nil {
+		dr.slog.Error("DishPostgresRepository.Update", ctx.Error.Error())
+		return ctx.Error
 	}
 
 	return nil
 }
 
 func (dr *DishPostgresRepository) Delete(id value_object.DishId) error {
-	_, err := dr.postgresHandler.DB.Exec(queries.DishDelete, string(id))
-	if err != nil {
-		dr.slog.Error("DishPostgresRepository.Delete", err.Error())
-		return err
+	ctx := dr.gormPostgresHandler.DB.Delete(&entity.Dish{Id: id})
+	if ctx.Error != nil {
+		dr.slog.Error("DishPostgresRepository.Delete", ctx.Error.Error())
+		return ctx.Error
 	}
 
 	return nil
