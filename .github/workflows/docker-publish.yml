@@ -13,15 +13,8 @@ env:
 
 jobs:
   build:
-
+    name: publish image
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
-
     steps:
       - uses: actions/checkout@v3
       - name: Login
@@ -30,4 +23,5 @@ jobs:
       - name: Build and Publish
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           
