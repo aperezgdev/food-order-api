@@ -7,10 +7,10 @@ import (
 
 type Dish struct {
 	Id          DishId              `gorm:"type:uuid;default:gen_random_uuid()" binding:"-"`
-	Name        DishName            `                                           binding:"required" db:"name"`
-	Description DishDescription     `                                           binding:"required" db:"description"`
-	Price       vo_shared.Price     `                                           binding:"required" db:"price"`
-	CreatedOn   vo_shared.CreatedOn `                                           binding:"-"        db:"createdon"`
+	Name        DishName            `                                           binding:"required"`
+	Description DishDescription     `                                           binding:"required"`
+	Price       vo_shared.Price     `                                           binding:"required"`
+	CreatedOn   vo_shared.CreatedOn `gorm:"default:current_timestamp"           binding:"-"`
 	Orders      []*Order            `gorm:"many2many:orders_dishes;"`
 }
 

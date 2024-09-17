@@ -4,8 +4,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type DishId uuid.UUID
+type DishId string
 
 func NewDishId() DishId {
-	return DishId(uuid.New())
+	return DishId(uuid.New().String())
 }

@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 
 	application "github.com/aperezgdev/food-order-api/internal/application/Dish"
 	"github.com/aperezgdev/food-order-api/internal/domain/entity"
@@ -65,13 +64,8 @@ func (dc *DishController) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	var err error
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		ctx.String(http.StatusBadRequest, "Id must be a uuid")
-		return
-	}
 
-	dish := entity.Dish{Id: value_object.DishId(uuid)}
+	dish := entity.Dish{Id: value_object.DishId(id)}
 
 	err = ctx.ShouldBind(&dish)
 	if err != nil {
@@ -91,12 +85,7 @@ func (dc *DishController) Update(ctx *gin.Context) {
 func (dc *DishController) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		ctx.String(http.StatusBadRequest, "Id must be a uuid")
-	}
-
-	result := dc.dishRemover.Run(value_object.DishId(uuid))
+	result := dc.dishRemover.Run(value_object.DishId(id))
 
 	result.Error(func(err error) {
 		dc.handlerError(err, ctx)

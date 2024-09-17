@@ -7,9 +7,9 @@ import (
 
 type Order struct {
 	Id        OrderId             `gorm:"type:uuid;default:gen_random_uuid()"`
-	Status    OrderStatus         `db:"status"`
+	Status    OrderStatus         `gorm:"default:new"`
 	Dishes    []*Dish             `gorm:"many2many:orders_dishes;"`
-	CreatedOn vo_shared.CreatedOn `db:"createdOn"`
+	CreatedOn vo_shared.CreatedOn `gorm:"default:current_timestamp"`
 }
 
 func NewOrder(dishes []*Dish) Order {
