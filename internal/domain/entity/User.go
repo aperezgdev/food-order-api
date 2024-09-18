@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	UserId    UserId `gorm:"type:uuid;default:gen_random_uuid()"`
+	Id        UserId `gorm:"type:uuid;default:gen_random_uuid()"`
 	Name      UserName
 	Email     UserEmail
 	CreatedOn value_object.CreatedOn `gorm:"default:current_timestamp"`
