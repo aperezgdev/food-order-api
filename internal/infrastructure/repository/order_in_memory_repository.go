@@ -25,7 +25,7 @@ func NewOrderInMemoryRepository() repository.OrderRepository {
 }
 
 func (oir *OrderInMemoryRepository) FindAll() ([]entity.Order, error) {
-	v := make([]entity.Order, len(oir.orders))
+	var v []entity.Order
 
 	for _, value := range oir.orders {
 		v = append(v, value)
@@ -37,7 +37,7 @@ func (oir *OrderInMemoryRepository) FindAll() ([]entity.Order, error) {
 func (oir *OrderInMemoryRepository) FindByStatus(
 	status value_object.OrderStatus,
 ) ([]entity.Order, error) {
-	v := make([]entity.Order, len(oir.orders))
+	var v []entity.Order
 
 	for _, value := range oir.orders {
 		if value.Status == status {
