@@ -1,8 +1,8 @@
-package value_object
+package order_vo
 
 const (
 	NEW        OrderStatus = "new"
-	WORKING_ON OrderStatus = "working"
+	WORKING_ON OrderStatus = "working_on"
 	READY      OrderStatus = "ready"
 )
 

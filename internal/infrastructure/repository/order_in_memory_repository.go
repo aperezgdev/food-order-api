@@ -1,31 +1,31 @@
 package repository
 
 import (
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
+	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
 )
 
 type OrderInMemoryRepository struct {
-	orders map[string]entity.Order
+	orders map[string]model.Order
 }
 
 func NewOrderInMemoryRepository() repository.OrderRepository {
 	return &OrderInMemoryRepository{
-		orders: map[string]entity.Order{
+		orders: map[string]model.Order{
 			"1": {
 				Id:        value_object.OrderId("1"),
 				Status:    value_object.NEW,
-				Dishes:    make([]*entity.Dish, 0),
+				Dishes:    make([]*model.Dish, 0),
 				CreatedOn: vo.NewCreatedOn(),
 			},
 		},
 	}
 }
 
-func (oir *OrderInMemoryRepository) FindAll() ([]entity.Order, error) {
-	var v []entity.Order
+func (oir *OrderInMemoryRepository) FindAll() ([]model.Order, error) {
+	var v []model.Order
 
 	for _, value := range oir.orders {
 		v = append(v, value)
@@ -36,8 +36,8 @@ func (oir *OrderInMemoryRepository) FindAll() ([]entity.Order, error) {
 
 func (oir *OrderInMemoryRepository) FindByStatus(
 	status value_object.OrderStatus,
-) ([]entity.Order, error) {
-	var v []entity.Order
+) ([]model.Order, error) {
+	var v []model.Order
 
 	for _, value := range oir.orders {
 		if value.Status == status {
@@ -48,7 +48,7 @@ func (oir *OrderInMemoryRepository) FindByStatus(
 	return v, nil
 }
 
-func (oir *OrderInMemoryRepository) Save(order entity.Order) error {
+func (oir *OrderInMemoryRepository) Save(order model.Order) error {
 	oir.orders[string(order.Id)] = order
 
 	return nil

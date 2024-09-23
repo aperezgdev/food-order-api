@@ -1,4 +1,4 @@
-package value_object
+package order_vo
 
 import "github.com/google/uuid"
 

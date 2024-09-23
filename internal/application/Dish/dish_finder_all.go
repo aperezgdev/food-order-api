@@ -3,10 +3,10 @@ package application
 import (
 	"log/slog"
 
-	result "github.com/aperezgdev/food-order-api/internal/domain"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/result"
 )
 
 type DishFinderAll struct {
@@ -18,11 +18,11 @@ func NewDishFinderAll(dishRepository repository.DishRepository, slog *slog.Logge
 	return &DishFinderAll{dishRepository, slog}
 }
 
-func (dfa *DishFinderAll) Run() *result.Result[[]entity.Dish] {
+func (dfa *DishFinderAll) Run() *result.Result[[]model.Dish] {
 	dfa.slog.Info("DishFinderAll.Run")
 	dishes, err := dfa.dishRepository.FindAll()
 	if err != nil {
-		return result.ErrorResult[[]entity.Dish](domain_errors.Database)
+		return result.ErrorResult[[]model.Dish](domain_errors.Database)
 	}
 
 	return result.OkResult(&dishes)

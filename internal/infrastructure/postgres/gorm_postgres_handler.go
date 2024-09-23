@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/aperezgdev/food-order-api/env"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 )
 
 type GormPostgresHandler struct {
@@ -30,7 +30,7 @@ func NewGormPostgresHandler(env env.EnvApp, log *slog.Logger) GormPostgresHandle
 		panic(err)
 	}
 
-	errMigrate := db.AutoMigrate(&entity.Order{}, &entity.User{}, &entity.Dish{})
+	errMigrate := db.AutoMigrate(&model.Order{}, &model.User{}, &model.Dish{})
 
 	if errMigrate != nil {
 		log.Error("NewGormPostgresHandler - Error on automigration", slog.Any("error", errMigrate))

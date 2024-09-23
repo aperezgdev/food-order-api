@@ -7,10 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	application "github.com/aperezgdev/food-order-api/internal/application/Dish"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	application "github.com/aperezgdev/food-order-api/internal/application/dish"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 )
 
 type DishController struct {
@@ -36,14 +36,14 @@ func (dc *DishController) GetAll(ctx *gin.Context) {
 
 	result.Error(func(err error) {
 		dc.handlerError(err, ctx)
-	}).Ok(func(t *[]entity.Dish) {
+	}).Ok(func(t *[]model.Dish) {
 		ctx.JSON(http.StatusOK, t)
 	})
 }
 
 func (dc *DishController) Create(ctx *gin.Context) {
 	var err error
-	dish := entity.Dish{}
+	dish := model.Dish{}
 
 	err = ctx.ShouldBind(&dish)
 	if err != nil {
@@ -55,7 +55,7 @@ func (dc *DishController) Create(ctx *gin.Context) {
 
 	result.Error(func(err error) {
 		dc.handlerError(err, ctx)
-	}).Ok(func(t *entity.Dish) {
+	}).Ok(func(t *model.Dish) {
 		ctx.Status(http.StatusCreated)
 	})
 }
@@ -65,7 +65,7 @@ func (dc *DishController) Update(ctx *gin.Context) {
 
 	var err error
 
-	dish := entity.Dish{Id: value_object.DishId(id)}
+	dish := model.Dish{Id: value_object.DishId(id)}
 
 	err = ctx.ShouldBind(&dish)
 	if err != nil {
@@ -77,7 +77,7 @@ func (dc *DishController) Update(ctx *gin.Context) {
 
 	result.Error(func(err error) {
 		dc.handlerError(err, ctx)
-	}).Ok(func(t *entity.Dish) {
+	}).Ok(func(t *model.Dish) {
 		ctx.Status(http.StatusOK)
 	})
 }
@@ -89,7 +89,7 @@ func (dc *DishController) Delete(ctx *gin.Context) {
 
 	result.Error(func(err error) {
 		dc.handlerError(err, ctx)
-	}).Ok(func(t *entity.Dish) {
+	}).Ok(func(t *model.Dish) {
 		ctx.Status(http.StatusAccepted)
 	})
 }

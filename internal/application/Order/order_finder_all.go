@@ -3,10 +3,10 @@ package application
 import (
 	"log/slog"
 
-	result "github.com/aperezgdev/food-order-api/internal/domain"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/result"
 )
 
 type OrderFinderAll struct {
@@ -21,10 +21,10 @@ func NewOrderFinderAll(
 	return &OrderFinderAll{orderRepository, slog}
 }
 
-func (ofa *OrderFinderAll) Run() *result.Result[[]entity.Order] {
+func (ofa *OrderFinderAll) Run() *result.Result[[]model.Order] {
 	orders, err := ofa.orderRepository.FindAll()
 	if err != nil {
-		return result.ErrorResult[[]entity.Order](domain_errors.Database)
+		return result.ErrorResult[[]model.Order](domain_errors.Database)
 	}
 
 	return result.OkResult(&orders)

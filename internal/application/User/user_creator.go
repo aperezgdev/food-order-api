@@ -3,10 +3,10 @@ package application
 import (
 	"log/slog"
 
-	result "github.com/aperezgdev/food-order-api/internal/domain"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	result "github.com/aperezgdev/food-order-api/internal/domain/shared/result"
 )
 
 type UserCreator struct {
@@ -18,12 +18,12 @@ func NewUserCreator(userRepository repository.UserRepository, log *slog.Logger) 
 	return &UserCreator{userRepository, log}
 }
 
-func (uc *UserCreator) Run(user *entity.User) *result.Result[entity.User] {
+func (uc *UserCreator) Run(user *model.User) *result.Result[model.User] {
 	uc.log.Info("UserCreator.Run ", slog.Any("user", user))
 	err := uc.userRepository.Save(*user)
 	if err != nil {
-		return result.ErrorResult[entity.User](errors.Database)
+		return result.ErrorResult[model.User](domain_errors.Database)
 	}
 
-	return result.OkResult(&entity.User{})
+	return result.OkResult(&model.User{})
 }

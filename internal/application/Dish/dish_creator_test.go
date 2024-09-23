@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	"github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
@@ -18,12 +18,12 @@ func newDishCreator() *DishCreator {
 func TestDishCreator(t *testing.T) {
 	dishCreator := newDishCreator()
 
-	dish := entity.Dish{
-		Id:          value_object.DishId("3"),
-		Name:        value_object.DishName("Fish and chips"),
-		Description: value_object.DishDescription("Fish with chips"),
-		Price:       vo.Price(10),
-		CreatedOn:   vo.NewCreatedOn(),
+	dish := model.Dish{
+		Id:          dish_vo.DishId("3"),
+		Name:        dish_vo.DishName("Fish and chips"),
+		Description: dish_vo.DishDescription("Fish with chips"),
+		Price:       value_object.Price(10),
+		CreatedOn:   value_object.NewCreatedOn(),
 	}
 
 	result := dishCreator.Run(dish)
@@ -46,23 +46,23 @@ func TestDishCreatorAndSave(t *testing.T) {
 
 	var nDishBefore int
 	resultBefore := dishFinderAll.Run()
-	resultBefore.Ok(func(t *[]entity.Dish) {
+	resultBefore.Ok(func(t *[]model.Dish) {
 		nDishBefore = len(*t)
 	})
 
-	dish := entity.Dish{
-		Id:          value_object.DishId("3"),
-		Name:        value_object.DishName("Fish and chips"),
-		Description: value_object.DishDescription("Fish with chips"),
-		Price:       vo.Price(10),
-		CreatedOn:   vo.NewCreatedOn(),
+	dish := model.Dish{
+		Id:          dish_vo.DishId("3"),
+		Name:        dish_vo.DishName("Fish and chips"),
+		Description: dish_vo.DishDescription("Fish with chips"),
+		Price:       value_object.Price(10),
+		CreatedOn:   value_object.NewCreatedOn(),
 	}
 
 	dishCreator.Run(dish)
 
 	var nDishAfter int
 	resultAfter := dishFinderAll.Run()
-	resultAfter.Ok(func(t *[]entity.Dish) {
+	resultAfter.Ok(func(t *[]model.Dish) {
 		nDishAfter = len(*t)
 	})
 

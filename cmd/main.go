@@ -6,8 +6,8 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/aperezgdev/food-order-api/env"
-	app_dish "github.com/aperezgdev/food-order-api/internal/application/Dish"
-	app_user "github.com/aperezgdev/food-order-api/internal/application/User"
+	app_dish "github.com/aperezgdev/food-order-api/internal/application/dish"
+	app_user "github.com/aperezgdev/food-order-api/internal/application/user"
 	http_server "github.com/aperezgdev/food-order-api/internal/infrastructure/http"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/http/controller"
 	route "github.com/aperezgdev/food-order-api/internal/infrastructure/http/route/dish"

@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
@@ -29,8 +29,8 @@ func TestDishFinderAll(t *testing.T) {
 		t.Errorf("TestDishFinderAll - Error has ocurred while trying to find all dishes")
 	}
 
-	var dishes []entity.Dish
-	result.Ok(func(t *[]entity.Dish) {
+	var dishes []model.Dish
+	result.Ok(func(t *[]model.Dish) {
 		dishes = *t
 	})
 
@@ -46,11 +46,11 @@ func TestDishFinderAllAfterSave(t *testing.T) {
 	dishCreator := NewDishCreator(slog.Default(), dishRepository)
 
 	var nUsersBefore int
-	dishFinderAll.Run().Ok(func(t *[]entity.Dish) {
+	dishFinderAll.Run().Ok(func(t *[]model.Dish) {
 		nUsersBefore = len(*t)
 	})
 
-	dish := entity.Dish{
+	dish := model.Dish{
 		Id:          value_object.DishId("3"),
 		Name:        value_object.DishName("Fish and chips"),
 		Description: value_object.DishDescription("Fish with chips"),
@@ -61,7 +61,7 @@ func TestDishFinderAllAfterSave(t *testing.T) {
 	dishCreator.Run(dish)
 
 	var nUsersAfter int
-	dishFinderAll.Run().Ok(func(t *[]entity.Dish) {
+	dishFinderAll.Run().Ok(func(t *[]model.Dish) {
 		nUsersAfter = len(*t)
 	})
 

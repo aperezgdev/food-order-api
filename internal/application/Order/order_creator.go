@@ -3,10 +3,10 @@ package application
 import (
 	"log/slog"
 
-	result "github.com/aperezgdev/food-order-api/internal/domain"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/result"
 )
 
 type OrderCreator struct {
@@ -18,11 +18,11 @@ func NewOrderCreator(orderRepository repository.OrderRepository, slog *slog.Logg
 	return &OrderCreator{orderRepository, slog}
 }
 
-func (oc *OrderCreator) Run(order entity.Order) *result.Result[entity.Order] {
+func (oc *OrderCreator) Run(order model.Order) *result.Result[model.Order] {
 	err := oc.orderRepository.Save(order)
 	if err != nil {
-		return result.ErrorResult[entity.Order](domain_errors.Database)
+		return result.ErrorResult[model.Order](domain_errors.Database)
 	}
 
-	return result.OkResult(&entity.Order{})
+	return result.OkResult(&model.Order{})
 }

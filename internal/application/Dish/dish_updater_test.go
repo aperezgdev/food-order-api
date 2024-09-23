@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
@@ -18,7 +18,7 @@ func newTestDishUpdater() *DishUpdater {
 func TestDishUpdaterWithoutError(t *testing.T) {
 	dishUpdater := newTestDishUpdater()
 
-	dish := entity.Dish{
+	dish := model.Dish{
 		Id:          value_object.DishId("1"),
 		Name:        value_object.DishName("Fish and chips"),
 		Description: value_object.DishDescription("Fish with chips"),

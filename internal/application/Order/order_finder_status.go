@@ -3,11 +3,11 @@ package application
 import (
 	"log/slog"
 
-	result "github.com/aperezgdev/food-order-api/internal/domain"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/result"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
 )
 
 type OrderFinderStatus struct {
@@ -22,10 +22,10 @@ func NewOrderFinderStatus(
 	return &OrderFinderStatus{orderRepository, slog}
 }
 
-func (ofs *OrderFinderStatus) Run(status value_object.OrderStatus) *result.Result[[]entity.Order] {
+func (ofs *OrderFinderStatus) Run(status value_object.OrderStatus) *result.Result[[]model.Order] {
 	orders, err := ofs.orderRepository.FindByStatus(status)
 	if err != nil {
-		return result.ErrorResult[[]entity.Order](domain_errors.Database)
+		return result.ErrorResult[[]model.Order](domain_errors.Database)
 	}
 
 	return result.OkResult(&orders)

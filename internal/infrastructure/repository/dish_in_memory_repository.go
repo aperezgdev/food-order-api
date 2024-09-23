@@ -1,30 +1,30 @@
 package repository
 
 import (
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	vo_dish "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	dish_vo "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 )
 
 type DishInMemoryRepository struct {
-	dishes map[string]entity.Dish
+	dishes map[string]model.Dish
 }
 
 func NewDishInMemoryRepository() *DishInMemoryRepository {
 	return &DishInMemoryRepository{
-		dishes: map[string]entity.Dish{
+		dishes: map[string]model.Dish{
 			"1": {
-				Id:          vo_dish.DishId("1"),
-				Name:        vo_dish.NewDishName("Macarrones"),
-				Description: vo_dish.NewDishDescription("Macarrones con tomatico"),
+				Id:          dish_vo.DishId("1"),
+				Name:        dish_vo.NewDishName("Macarrones"),
+				Description: dish_vo.NewDishDescription("Macarrones con tomatico"),
 				Price:       value_object.NewPrice(12.2),
 				CreatedOn:   value_object.NewCreatedOn(),
 			},
 			"2": {
-				Id:          vo_dish.DishId("2"),
-				Name:        vo_dish.NewDishName("Arroz con pollo"),
-				Description: vo_dish.NewDishDescription("Arroz con pollo"),
+				Id:          dish_vo.DishId("2"),
+				Name:        dish_vo.NewDishName("Arroz con pollo"),
+				Description: dish_vo.NewDishDescription("Arroz con pollo"),
 				Price:       value_object.NewPrice(9.2),
 				CreatedOn:   value_object.NewCreatedOn(),
 			},
@@ -32,8 +32,8 @@ func NewDishInMemoryRepository() *DishInMemoryRepository {
 	}
 }
 
-func (dir *DishInMemoryRepository) FindAll() ([]entity.Dish, error) {
-	v := make([]entity.Dish, len(dir.dishes))
+func (dir *DishInMemoryRepository) FindAll() ([]model.Dish, error) {
+	var v []model.Dish
 
 	for _, value := range dir.dishes {
 		v = append(v, value)
@@ -42,13 +42,23 @@ func (dir *DishInMemoryRepository) FindAll() ([]entity.Dish, error) {
 	return v, nil
 }
 
-func (dir *DishInMemoryRepository) Save(dish entity.Dish) error {
+func (dir *DishInMemoryRepository) Find(id dish_vo.DishId) (model.Dish, error) {
+	dish, exists := dir.dishes[string(id)]
+
+	if !exists {
+		return dish, domain_errors.NotFound
+	}
+
+	return dish, nil
+}
+
+func (dir *DishInMemoryRepository) Save(dish model.Dish) error {
 	dir.dishes[string(dish.Id)] = dish
 
 	return nil
 }
 
-func (dir *DishInMemoryRepository) Update(dish entity.Dish) error {
+func (dir *DishInMemoryRepository) Update(dish model.Dish) error {
 	_, exists := dir.dishes[string(dish.Id)]
 
 	if !exists {
@@ -60,7 +70,7 @@ func (dir *DishInMemoryRepository) Update(dish entity.Dish) error {
 	return nil
 }
 
-func (dir *DishInMemoryRepository) Delete(id vo_dish.DishId) error {
+func (dir *DishInMemoryRepository) Delete(id dish_vo.DishId) error {
 	_, exists := dir.dishes[string(id)]
 
 	if !exists {

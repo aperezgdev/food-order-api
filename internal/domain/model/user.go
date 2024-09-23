@@ -1,8 +1,8 @@
-package entity
+package model
 
 import (
-	"github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	. "github.com/aperezgdev/food-order-api/internal/domain/value_object/User"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	. "github.com/aperezgdev/food-order-api/internal/domain/value_object/user"
 )
 
 type User struct {

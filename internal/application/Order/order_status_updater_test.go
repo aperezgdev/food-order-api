@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
@@ -37,7 +37,7 @@ func TestOrderStatusUpdaterCommmitChanges(t *testing.T) {
 
 	var nReadyOrderBefore int
 	resultBefore := orderFinderStatus.Run(value_object.READY)
-	resultBefore.Ok(func(t *[]entity.Order) {
+	resultBefore.Ok(func(t *[]model.Order) {
 		nReadyOrderBefore = len(*t)
 	})
 
@@ -45,7 +45,7 @@ func TestOrderStatusUpdaterCommmitChanges(t *testing.T) {
 
 	var nReadyOrderAfter int
 	resultAfter := orderFinderStatus.Run(value_object.READY)
-	resultAfter.Ok(func(t *[]entity.Order) {
+	resultAfter.Ok(func(t *[]model.Order) {
 		nReadyOrderAfter = len(*t)
 	})
 

@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"testing"
 
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 

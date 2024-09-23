@@ -1,8 +1,8 @@
-package entity
+package model
 
 import (
-	vo_shared "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	. "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
+	vo_shared "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	. "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
 )
 
 type Order struct {

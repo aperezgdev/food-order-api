@@ -1,15 +1,14 @@
 package application
 
 import (
-	"database/sql"
 	"errors"
 	"log/slog"
 
-	result "github.com/aperezgdev/food-order-api/internal/domain"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Dish"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	"github.com/aperezgdev/food-order-api/internal/domain/shared/result"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
 )
 
 type DishRemover struct {
@@ -21,16 +20,16 @@ func NewDishRemover(dishRepository repository.DishRepository, slog *slog.Logger)
 	return &DishRemover{dishRepository, slog}
 }
 
-func (df *DishRemover) Run(id value_object.DishId) *result.Result[entity.Dish] {
+func (df *DishRemover) Run(id value_object.DishId) *result.Result[model.Dish] {
 	err := df.dishRepository.Delete(id)
 
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return result.ErrorResult[entity.Dish](domain_errors.NotFound)
+	if err != nil && errors.Is(err, domain_errors.NotFound) {
+		return result.ErrorResult[model.Dish](domain_errors.NotFound)
 	}
 
 	if err != nil {
-		return result.ErrorResult[entity.Dish](domain_errors.Database)
+		return result.ErrorResult[model.Dish](domain_errors.Database)
 	}
 
-	return result.OkResult(&entity.Dish{})
+	return result.OkResult(&model.Dish{})
 }

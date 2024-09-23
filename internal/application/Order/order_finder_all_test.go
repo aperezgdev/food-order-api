@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
@@ -29,8 +29,8 @@ func TestOrderFinderAll(t *testing.T) {
 		t.Errorf("TestOrderFinderAll - OrderFinderAll return an error")
 	}
 
-	var orders *[]entity.Order
-	result.Ok(func(t *[]entity.Order) {
+	var orders *[]model.Order
+	result.Ok(func(t *[]model.Order) {
 		orders = t
 	})
 
@@ -45,10 +45,10 @@ func TestOrderFinderAllAfterCreator(t *testing.T) {
 	orderCreator := NewOrderCreator(orderRepository, &slog.Logger{})
 	orderFinderAll := NewOrderFinderAll(orderRepository, &slog.Logger{})
 
-	order := entity.Order{
+	order := model.Order{
 		Id:        value_object.OrderId("2"),
 		Status:    value_object.NEW,
-		Dishes:    make([]*entity.Dish, 0),
+		Dishes:    make([]*model.Dish, 0),
 		CreatedOn: vo.NewCreatedOn(),
 	}
 
@@ -56,8 +56,8 @@ func TestOrderFinderAllAfterCreator(t *testing.T) {
 
 	result := orderFinderAll.Run()
 
-	var orders *[]entity.Order
-	result.Ok(func(t *[]entity.Order) {
+	var orders *[]model.Order
+	result.Ok(func(t *[]model.Order) {
 		orders = t
 	})
 

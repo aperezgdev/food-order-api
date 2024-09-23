@@ -7,10 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	application "github.com/aperezgdev/food-order-api/internal/application/User"
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/User"
+	"github.com/aperezgdev/food-order-api/internal/application/user"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/user"
 )
 
 type UserController struct {
@@ -29,7 +29,7 @@ func NewUserController(
 
 func (uc *UserController) Create(ctx *gin.Context) {
 	var err error
-	user := entity.User{}
+	user := model.User{}
 
 	err = ctx.ShouldBind(&user)
 	if err != nil {
@@ -42,7 +42,7 @@ func (uc *UserController) Create(ctx *gin.Context) {
 
 	result.Error(func(err error) {
 		uc.handlerError(err, ctx)
-	}).Ok(func(t *entity.User) {
+	}).Ok(func(t *model.User) {
 		ctx.Status(http.StatusCreated)
 	})
 }
@@ -54,7 +54,7 @@ func (uc *UserController) Find(ctx *gin.Context) {
 
 	result.Error(func(err error) {
 		uc.handlerError(err, ctx)
-	}).Ok(func(t *entity.User) {
+	}).Ok(func(t *model.User) {
 		ctx.JSON(http.StatusOK, t)
 	})
 }

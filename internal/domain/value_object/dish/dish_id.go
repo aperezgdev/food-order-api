@@ -1,4 +1,4 @@
-package value_object
+package dish_vo
 
 import (
 	"github.com/google/uuid"

@@ -3,7 +3,7 @@ package result
 import (
 	"testing"
 
-	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/error"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
 )
 
 func TestErrorResult(t *testing.T) {

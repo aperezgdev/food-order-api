@@ -1,4 +1,4 @@
-package value_object
+package user_vo
 
 import (
 	"regexp"

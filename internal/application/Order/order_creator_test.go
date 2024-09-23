@@ -1,13 +1,12 @@
 package application
 
 import (
-	"fmt"
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/entity"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/Order"
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
 	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
@@ -19,10 +18,10 @@ func newTestOrderCreator() *OrderCreator {
 func TestOrderCreatorNotError(t *testing.T) {
 	orderCreator := newTestOrderCreator()
 
-	order := entity.Order{
+	order := model.Order{
 		Id:        value_object.OrderId("2"),
 		Status:    value_object.NEW,
-		Dishes:    make([]*entity.Dish, 0),
+		Dishes:    make([]*model.Dish, 0),
 		CreatedOn: vo.NewCreatedOn(),
 	}
 
@@ -45,14 +44,14 @@ func TestOrderCreator(t *testing.T) {
 
 	var nOrderBefore int
 	resultFinderBefore := orderFinderAll.Run()
-	resultFinderBefore.Ok(func(t *[]entity.Order) {
+	resultFinderBefore.Ok(func(t *[]model.Order) {
 		nOrderBefore = len(*t)
 	})
 
-	order := entity.Order{
+	order := model.Order{
 		Id:        value_object.OrderId("3"),
 		Status:    value_object.WORKING_ON,
-		Dishes:    make([]*entity.Dish, 0),
+		Dishes:    make([]*model.Dish, 0),
 		CreatedOn: vo.NewCreatedOn(),
 	}
 
@@ -60,12 +59,9 @@ func TestOrderCreator(t *testing.T) {
 
 	var nOrdersAfter int
 	resultFinderAfter := orderFinderAll.Run()
-	resultFinderAfter.Ok(func(t *[]entity.Order) {
+	resultFinderAfter.Ok(func(t *[]model.Order) {
 		nOrdersAfter = len(*t)
 	})
-
-	fmt.Println(nOrdersAfter)
-	fmt.Println(nOrderBefore)
 
 	if nOrdersAfter != nOrderBefore+1 {
 		t.Errorf("TestOrderCreator - OrderCreator is not saving order")
