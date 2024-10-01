@@ -4,18 +4,18 @@ import (
 	"log/slog"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
+
+	"github.com/aperezgdev/food-order-api/internal/domain/repository"
 	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
 	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
-
-func newTestDishRemover() *DishRemover {
-	return NewDishRemover(repository.NewDishInMemoryRepository(), slog.Default())
-}
 
 // Should remove without error
 func TestDishRemover(t *testing.T) {
-	dishRemover := newTestDishRemover()
+	dishRepository := repository.NewMockDishRepository()
+	dishRepository.On("Delete", mock.Anything).Return(nil)
+	dishRemover := NewDishRemover(dishRepository, slog.Default())
 
 	result := dishRemover.Run(value_object.DishId("1"))
 
@@ -31,7 +31,9 @@ func TestDishRemover(t *testing.T) {
 
 // Should return NOT_FOUND error trying to remove a not exist dish
 func TestDishNotExistRemover(t *testing.T) {
-	dishRemover := newTestDishRemover()
+	dishRepository := repository.NewMockDishRepository()
+	dishRepository.On("Delete", mock.Anything).Return(domain_errors.NotFound)
+	dishRemover := NewDishRemover(dishRepository, slog.Default())
 
 	result := dishRemover.Run(value_object.DishId("931"))
 

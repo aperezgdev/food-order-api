@@ -1,24 +1,24 @@
 package application
 
 import (
+	"errors"
 	"log/slog"
 	"testing"
 
 	"github.com/aperezgdev/food-order-api/internal/domain/model"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
+	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
 )
-
-func newTestDishFinderAll() *DishFinderAll {
-	return NewDishFinderAll(repository.NewDishInMemoryRepository(), slog.Default())
-}
 
 // Should find all dish without error
 func TestDishFinderAll(t *testing.T) {
-	userFinderAll := newTestDishFinderAll()
+	dishRepository := repository.NewMockDishRepository()
+	dishRepository.On("FindAll").Return([]model.Dish{
+		{},
+	}, nil)
+	dishFinderAll := NewDishFinderAll(dishRepository, slog.Default())
 
-	result := userFinderAll.Run()
+	result := dishFinderAll.Run()
 
 	var testError error
 	result.Error(func(err error) {
@@ -39,33 +39,24 @@ func TestDishFinderAll(t *testing.T) {
 	}
 }
 
-// Should retrieve one more dish after insert
-func TestDishFinderAllAfterSave(t *testing.T) {
-	dishRepository := repository.NewDishInMemoryRepository()
+// Repository will return an error and dish finder all should wrap the error on result
+func TestDishFinderAllRepositoryError(t *testing.T) {
+	dishRepository := repository.NewMockDishRepository()
+	dishRepository.On("FindAll").Return([]model.Dish{}, domain_errors.Database)
 	dishFinderAll := NewDishFinderAll(dishRepository, slog.Default())
-	dishCreator := NewDishCreator(slog.Default(), dishRepository)
 
-	var nUsersBefore int
-	dishFinderAll.Run().Ok(func(t *[]model.Dish) {
-		nUsersBefore = len(*t)
+	result := dishFinderAll.Run()
+
+	var testError error
+	result.Error(func(err error) {
+		testError = err
 	})
 
-	dish := model.Dish{
-		Id:          value_object.DishId("3"),
-		Name:        value_object.DishName("Fish and chips"),
-		Description: value_object.DishDescription("Fish with chips"),
-		Price:       vo.Price(10),
-		CreatedOn:   vo.NewCreatedOn(),
+	if testError == nil {
+		t.Errorf("TestDishFinderAll - Error should has ocurred while trying to find all dishes")
 	}
 
-	dishCreator.Run(dish)
-
-	var nUsersAfter int
-	dishFinderAll.Run().Ok(func(t *[]model.Dish) {
-		nUsersAfter = len(*t)
-	})
-
-	if nUsersAfter != nUsersBefore+1 {
-		t.Errorf("TestDishFinderAllAfterSave - Didnt find all dishes")
+	if !errors.Is(testError, domain_errors.Database) {
+		t.Errorf("TestDishFinderAll - Error is not an domain error")
 	}
 }

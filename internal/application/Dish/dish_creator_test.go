@@ -4,19 +4,20 @@ import (
 	"log/slog"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
 	"github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
 	"github.com/aperezgdev/food-order-api/internal/domain/value_object/dish"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
-
-func newDishCreator() *DishCreator {
-	return NewDishCreator(slog.Default(), repository.NewDishInMemoryRepository())
-}
 
 // Should create a dish
 func TestDishCreator(t *testing.T) {
-	dishCreator := newDishCreator()
+	dishRepository := repository.NewMockDishRepository()
+	dishRepository.On("Save", mock.Anything).Return(nil)
+	dishCreator := NewDishCreator(slog.Default(), dishRepository)
 
 	dish := model.Dish{
 		Id:          dish_vo.DishId("3"),
@@ -38,17 +39,11 @@ func TestDishCreator(t *testing.T) {
 	}
 }
 
-// Should create a creator and save a user
-func TestDishCreatorAndSave(t *testing.T) {
-	dishRepository := repository.NewDishInMemoryRepository()
+// Repository return an error and dish creator should return an result with error
+func TestDishCreatorRepositoryError(t *testing.T) {
+	dishRepository := repository.NewMockDishRepository()
+	dishRepository.On("Save", mock.Anything).Return(domain_errors.Database)
 	dishCreator := NewDishCreator(slog.Default(), dishRepository)
-	dishFinderAll := NewDishFinderAll(dishRepository, slog.Default())
-
-	var nDishBefore int
-	resultBefore := dishFinderAll.Run()
-	resultBefore.Ok(func(t *[]model.Dish) {
-		nDishBefore = len(*t)
-	})
 
 	dish := model.Dish{
 		Id:          dish_vo.DishId("3"),
@@ -58,15 +53,14 @@ func TestDishCreatorAndSave(t *testing.T) {
 		CreatedOn:   value_object.NewCreatedOn(),
 	}
 
-	dishCreator.Run(dish)
+	result := dishCreator.Run(dish)
 
-	var nDishAfter int
-	resultAfter := dishFinderAll.Run()
-	resultAfter.Ok(func(t *[]model.Dish) {
-		nDishAfter = len(*t)
+	var testError error
+	result.Error(func(err error) {
+		testError = err
 	})
 
-	if nDishAfter != nDishBefore+1 {
-		t.Errorf("TestDishCreatorAndSave - DishCreator didnt save the dish")
+	if testError == nil {
+		t.Errorf("TestDishCreator - Error should has ocurred")
 	}
 }

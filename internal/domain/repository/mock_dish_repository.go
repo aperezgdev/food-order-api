@@ -11,6 +11,10 @@ type MockDishRepository struct {
 	mock.Mock
 }
 
+func NewMockDishRepository() *MockDishRepository {
+	return &MockDishRepository{}
+}
+
 func (m *MockDishRepository) FindAll() ([]model.Dish, error) {
 	args := m.Called()
 
@@ -19,7 +23,7 @@ func (m *MockDishRepository) FindAll() ([]model.Dish, error) {
 
 func (m *MockDishRepository) Save(dish model.Dish) error {
 	args := m.Called(dish)
-	return args.Error(1)
+	return args.Error(0)
 }
 
 func (m *MockDishRepository) Find(id dish_vo.DishId) (model.Dish, error) {
@@ -31,7 +35,7 @@ func (m *MockDishRepository) Find(id dish_vo.DishId) (model.Dish, error) {
 func (m *MockDishRepository) Update(dish model.Dish) error {
 	args := m.Called(dish)
 
-	return args.Error(1)
+	return args.Error(0)
 }
 
 func (m *MockDishRepository) Delete(id dish_vo.DishId) error {
