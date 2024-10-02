@@ -1,21 +1,30 @@
 package application
 
 import (
+	"errors"
+	"fmt"
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	"github.com/stretchr/testify/mock"
+
+	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
 	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
 )
 
-func newTestOrderStatusUpdater() *OrderStatusUpdater {
-	return NewOrderStatusUpdater(repository.NewOrderInMemoryRepository(), &slog.Logger{})
+var (
+	orderRepository    = repository.NewMockOrderRepository()
+	orderStatusUpdater = NewOrderStatusUpdater(orderRepository, slog.Default())
+)
+
+func repositoryShouldReturn(result error) {
+	orderRepository.On("UpdateStatus", mock.Anything, mock.Anything).Return(result).Once()
 }
 
 // Should update without error
 func TestOrderStatusUpdater(t *testing.T) {
-	orderStatusUpdater := newTestOrderStatusUpdater()
+	repositoryShouldReturn(nil)
 
 	result := orderStatusUpdater.Run(value_object.OrderId("1"), value_object.READY)
 
@@ -29,27 +38,20 @@ func TestOrderStatusUpdater(t *testing.T) {
 	}
 }
 
-// Should update and confirm changes
-func TestOrderStatusUpdaterCommmitChanges(t *testing.T) {
-	orderRepository := repository.NewOrderInMemoryRepository()
-	orderStatusUpdater := NewOrderStatusUpdater(orderRepository, &slog.Logger{})
-	orderFinderStatus := NewOrderFinderStatus(orderRepository, &slog.Logger{})
+// Should return error
+func TestOrderStatusUpdaterRepositoryError(t *testing.T) {
+	repositoryShouldReturn(domain_errors.Database)
 
-	var nReadyOrderBefore int
-	resultBefore := orderFinderStatus.Run(value_object.READY)
-	resultBefore.Ok(func(t *[]model.Order) {
-		nReadyOrderBefore = len(*t)
+	result := orderStatusUpdater.Run(value_object.OrderId("1"), value_object.READY)
+
+	var testError error
+	result.Error(func(err error) {
+		testError = err
 	})
 
-	orderStatusUpdater.Run(value_object.OrderId("1"), value_object.READY)
+	fmt.Println(testError)
 
-	var nReadyOrderAfter int
-	resultAfter := orderFinderStatus.Run(value_object.READY)
-	resultAfter.Ok(func(t *[]model.Order) {
-		nReadyOrderAfter = len(*t)
-	})
-
-	if nReadyOrderAfter != nReadyOrderBefore+1 {
-		t.Errorf("TestOrderStatusUpdaterCommitChanges - Order status is not updating")
+	if !errors.Is(testError, domain_errors.Database) {
+		t.Errorf("TestOrderStatusUpdaterRepositoryError - Error didnt ocurred")
 	}
 }

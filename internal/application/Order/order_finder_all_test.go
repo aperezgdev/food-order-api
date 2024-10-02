@@ -1,22 +1,24 @@
 package application
 
 import (
+	"errors"
 	"log/slog"
 	"testing"
 
 	"github.com/aperezgdev/food-order-api/internal/domain/model"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
+	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	domain_errors "github.com/aperezgdev/food-order-api/internal/domain/shared/domain_error"
 )
-
-func newTestOrderFinderAll() *OrderFinderAll {
-	return NewOrderFinderAll(repository.NewOrderInMemoryRepository(), slog.Default())
-}
 
 // Should return all orders
 func TestOrderFinderAll(t *testing.T) {
-	orderFinderAll := newTestOrderFinderAll()
+	orderRepository := repository.NewMockOrderRepository()
+	orderRepository.On("FindAll").Return([]model.Order{
+		{
+			Id: "1",
+		},
+	}, nil)
+	orderFinderAll := NewOrderFinderAll(orderRepository, slog.Default())
 
 	result := orderFinderAll.Run()
 
@@ -41,27 +43,18 @@ func TestOrderFinderAll(t *testing.T) {
 
 // Should return 2 orders
 func TestOrderFinderAllAfterCreator(t *testing.T) {
-	orderRepository := repository.NewOrderInMemoryRepository()
-	orderCreator := NewOrderCreator(orderRepository, &slog.Logger{})
+	orderRepository := repository.NewMockOrderRepository()
+	orderRepository.On("FindAll").Return([]model.Order{}, domain_errors.Database)
 	orderFinderAll := NewOrderFinderAll(orderRepository, &slog.Logger{})
-
-	order := model.Order{
-		Id:        value_object.OrderId("2"),
-		Status:    value_object.NEW,
-		Dishes:    make([]*model.Dish, 0),
-		CreatedOn: vo.NewCreatedOn(),
-	}
-
-	orderCreator.Run(order)
 
 	result := orderFinderAll.Run()
 
-	var orders *[]model.Order
-	result.Ok(func(t *[]model.Order) {
-		orders = t
+	var testError error
+	result.Error(func(err error) {
+		testError = err
 	})
 
-	if len(*orders) != 2 {
+	if !errors.Is(testError, domain_errors.Database) {
 		t.Errorf("TestOrderFinderAll - OrderFinderall is not returning all orders")
 	}
 }

@@ -11,6 +11,10 @@ type MockOrderRepository struct {
 	mock.Mock
 }
 
+func NewMockOrderRepository() *MockOrderRepository {
+	return &MockOrderRepository{}
+}
+
 func (m *MockOrderRepository) FindAll() ([]model.Order, error) {
 	args := m.Called()
 

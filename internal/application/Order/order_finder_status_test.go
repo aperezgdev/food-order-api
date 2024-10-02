@@ -1,23 +1,26 @@
 package application
 
 import (
+	"fmt"
 	"log/slog"
 	"testing"
 
-	"github.com/aperezgdev/food-order-api/internal/domain/model"
-	result "github.com/aperezgdev/food-order-api/internal/domain/shared/result"
-	vo "github.com/aperezgdev/food-order-api/internal/domain/shared/value_object"
-	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
-	"github.com/aperezgdev/food-order-api/internal/infrastructure/repository"
-)
+	"github.com/stretchr/testify/mock"
 
-func newTestOrderFinderStatus() *OrderFinderStatus {
-	return NewOrderFinderStatus(repository.NewOrderInMemoryRepository(), slog.Default())
-}
+	"github.com/aperezgdev/food-order-api/internal/domain/model"
+	"github.com/aperezgdev/food-order-api/internal/domain/repository"
+	result "github.com/aperezgdev/food-order-api/internal/domain/shared/result"
+	value_object "github.com/aperezgdev/food-order-api/internal/domain/value_object/order"
+)
 
 // Should return one order with NEW status
 func TestOrderFinderStatus(t *testing.T) {
-	orderFinderStatus := newTestOrderFinderStatus()
+	orderRepository := repository.NewMockOrderRepository()
+	orderRepository.On("FindByStatus", mock.Anything).Return([]model.Order{{
+		Id:     "1",
+		Status: value_object.NEW,
+	}}, nil)
+	orderFinderStatus := NewOrderFinderStatus(orderRepository, slog.Default())
 
 	result := orderFinderStatus.Run(value_object.NEW)
 
@@ -35,35 +38,23 @@ func TestOrderFinderStatus(t *testing.T) {
 	}
 }
 
-// Sgould return empty list before create, and should retunr one order after create
-func TestOrderFinderStatusAfterCreate(t *testing.T) {
-	orderRepository := repository.NewOrderInMemoryRepository()
-	orderCreator := NewOrderCreator(orderRepository, &slog.Logger{})
+// Shoult return empty list
+func TestOrderFinderStatusNotExistsStatus(t *testing.T) {
+	orderRepository := repository.NewMockOrderRepository()
+	orderRepository.On("FindByStatus", mock.Anything).Return([]model.Order{}, nil)
 	orderFinderStatus := NewOrderFinderStatus(orderRepository, &slog.Logger{})
 
 	var res *result.Result[[]model.Order]
 	res = orderFinderStatus.Run(value_object.READY)
 
-	var ordersReadyBefore int
+	var orders []model.Order
 	res.Ok(func(t *[]model.Order) {
-		ordersReadyBefore = len(*t)
+		orders = *t
 	})
 
-	order := model.Order{
-		Id:        value_object.OrderId("2"),
-		Status:    value_object.READY,
-		Dishes:    make([]*model.Dish, 0),
-		CreatedOn: vo.NewCreatedOn(),
-	}
-	orderCreator.Run(order)
+	fmt.Println(len(orders))
 
-	var ordersReadyAfter int
-	res = orderFinderStatus.Run(value_object.READY)
-	res.Ok(func(t *[]model.Order) {
-		ordersReadyAfter = len(*t)
-	})
-
-	if ordersReadyAfter != ordersReadyBefore+1 {
+	if len(orders) != 0 {
 		t.Errorf(
 			"TestOrderFinderStatus - Result from was searched before created a new ready order was not changed",
 		)
