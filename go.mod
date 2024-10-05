@@ -13,7 +13,6 @@ require (
 )
 
 require (
-	github.com/alekns/go-inversify v0.0.0-20190603083415-9e1d617ec0ff // indirect
 	github.com/bytedance/sonic v1.12.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
