@@ -32,7 +32,9 @@ func (opr *OrderPostgresRepository) UpdateStatus(
 	id value_object.OrderId,
 	status value_object.OrderStatus,
 ) error {
-	result := opr.gormPostgresHandler.DB.Save(&model.Order{Id: id, Status: status})
+	result := opr.gormPostgresHandler.DB.Model(&model.Order{}).
+		Where("id = ?", id).
+		Update("status", status)
 
 	return result.Error
 }

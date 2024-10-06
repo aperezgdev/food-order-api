@@ -1,9 +1,11 @@
 package application
 
 import (
-	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
+
+	"gorm.io/gorm"
 
 	"github.com/aperezgdev/food-order-api/internal/domain/model"
 	"github.com/aperezgdev/food-order-api/internal/domain/repository"
@@ -30,7 +32,9 @@ func (osu *OrderStatusUpdater) Run(
 ) *result.Result[model.Order] {
 	err := osu.orderRepository.UpdateStatus(id, status)
 
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
+	fmt.Println(err)
+
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return result.ErrorResult[model.Order](domain_errors.NotFound)
 	}
 
